@@ -83,9 +83,9 @@ public class Scanner
 				takeIt();
 				return Token.OPERATOR;
 				
-			case ':':
+			case '<':
 				takeIt();
-				if( currentChar == '=' ) {
+				if( currentChar == '-' ) {
 					takeIt();
 					return Token.OPERATOR;
 				} else

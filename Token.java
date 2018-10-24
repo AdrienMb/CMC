@@ -1,13 +1,3 @@
-/*
- * 16.08.2016 Minor editing
- * 29.10.2009 New package structure
- * 22.10.2006 isAssignOp(), isAddOp(), isMulOp()
- * 28.09.2006 New keyword: return
- * 22.09.2006 Keyword recoqnition in constructor
- * 22.09.2006 ERROR added
- * 17.09.2006 Original Version (based on Example 4.2 in Watt&Brown)
- */
- 
 package dk.via.jpe.intlang;
 
 
@@ -71,20 +61,23 @@ public class Token
 	public static final byte OPERATOR = 2;
 	
 	public static final byte NEW = 3;
-	public static final byte ASSIGN = 4;
-	public static final byte IF = 5;
-	public static final byte DO = 6;
-	public static final byte ELSE = 7;
-	public static final byte WHILE = 8;
-	public static final byte DECLARE = 9;
-	public static final byte RESULT = 10;
+	public static final byte IF = 4;
+	public static final byte DO = 5;
+	public static final byte ELSE = 6;
+	public static final byte WHILE = 7;
+	public static final byte DECLARE = 8;
+	public static final byte RESULT = 9;
+	public static final byte INT = 10;
+	public static final byte BOOLEAN = 11;
 	
-	public static final byte QUOTE = 11;
-	public static final byte COLONS = 12;
-	public static final byte COMMA = 15;
-	public static final byte SEMICOLON = 16;
-	public static final byte LEFTPARAN = 17;
-	public static final byte RIGHTPARAN = 18;
+	public static final byte QUOTE = 12;
+	public static final byte COLONS = 13;
+	public static final byte COMMA = 14;
+	public static final byte SEMICOLON = 15;
+	public static final byte LEFTPARAN = 16;
+	public static final byte RIGHTPARAN = 17;
+	
+	public static final byte DISPLAY = 18;
 	
 	public static final byte EOT = 19;
 	
@@ -98,13 +91,14 @@ public class Token
 		"<operator>",
 		
 		"new",
-		"<-",
 		"if",
 		"do",
 		"else",
 		"while",
 		"declare",
 		"result",
+		"int",
+		"boolean",
 		
 
 		"\"",
@@ -113,6 +107,7 @@ public class Token
 		";",
 		"(",
 		")",
+		"display",
 		"<eot>",
 		"<error>",
 	};
