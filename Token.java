@@ -60,28 +60,33 @@ public class Token
 	public static final byte INTEGERLITERAL = 1;
 	public static final byte OPERATOR = 2;
 	
-	public static final byte NEW = 3;
-	public static final byte IF = 4;
-	public static final byte DO = 5;
-	public static final byte ELSE = 6;
-	public static final byte WHILE = 7;
-	public static final byte DECLARE = 8;
-	public static final byte RESULT = 9;
-	public static final byte INT = 10;
-	public static final byte BOOLEAN = 11;
+	public static final byte VARIABLES = 3;
+	public static final byte FUNCTIONS = 4;
+	public static final byte EXECUTE = 5;
+	public static final byte NEW = 6;
+	public static final byte IF = 7;
+	public static final byte DO = 8;
+	public static final byte ELSE = 9;
+	public static final byte WHILE = 10;
+	public static final byte DECLARE = 11;
+	public static final byte RESULT = 12;
+	public static final byte INT = 13;
+	public static final byte BOOLEAN = 14;
+	public static final byte TAB = 15;
 	
-	public static final byte QUOTE = 12;
-	public static final byte COLONS = 13;
-	public static final byte COMMA = 14;
-	public static final byte SEMICOLON = 15;
-	public static final byte LEFTPARAN = 16;
-	public static final byte RIGHTPARAN = 17;
+	public static final byte QUOTE = 16;
+	public static final byte COLONS = 17;
+	public static final byte COMMA = 18;
+	public static final byte SEMICOLON = 19;
+	public static final byte LEFTPARAN = 20;
+	public static final byte RIGHTPARAN = 21;
+	public static final byte QUESTION = 22;
 	
-	public static final byte DISPLAY = 18;
+	public static final byte DISPLAY = 23;
 	
-	public static final byte EOT = 19;
+	public static final byte EOT = 24;
 	
-	public static final byte ERROR = 20;
+	public static final byte ERROR = 25;
 	
 	
 	private static final String SPELLINGS[] =
@@ -90,15 +95,19 @@ public class Token
 		"<integerliteral>",
 		"<operator>",
 		
+		"variables",
+		"functions",
+		"execute",
 		"new",
 		"if",
 		"do",
-		"else",
+		"else do",
 		"while",
 		"declare",
 		"result",
 		"int",
 		"boolean",
+		"tab",
 		
 
 		"\"",
@@ -107,6 +116,7 @@ public class Token
 		";",
 		"(",
 		")",
+		"?",
 		"display",
 		"<eot>",
 		"<error>",
