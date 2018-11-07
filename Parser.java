@@ -39,12 +39,17 @@ public class Parser
 		accept( Token.QUOTE );
 		accept( Token.VARIABLES );
 		accept( Token.COLONS );
+		accept( Token.NEWLINE );
 		parseDeclarations();
-		accept( Token.FUNCTIONS );
-		accept( Token.COLONS );
-		parseFunctions();
+		if(currentTerminal.kind == Token.FUNCTIONS  ) {
+			accept( Token.FUNCTIONS );
+			accept( Token.COLONS );
+			accept( Token.NEWLINE );
+			parseFunctions();
+		}
 		accept( Token.EXECUTE );
 		accept( Token.COLONS );
+		accept( Token.NEWLINE );
 		parseStatements();
 		accept( Token.QUOTE );
 	}
@@ -64,14 +69,17 @@ public class Parser
 			if(currentTerminal.kind==Token.INT) {
 				accept( Token.INT );
 				accept( Token.IDENTIFIER );
+				accept( Token.NEWLINE );
 			}
 			else if(currentTerminal.kind==Token.BOOLEAN) {
 				accept( Token.BOOLEAN );
 				accept( Token.IDENTIFIER );
+				accept( Token.NEWLINE );
 			}
 			else if(currentTerminal.kind==Token.TAB) {
 				accept( Token.TAB );
 				accept( Token.IDENTIFIER );
+				accept( Token.NEWLINE );
 			}
 			else {
 				System.out.println( "int, boolean or tab expected" );
@@ -95,10 +103,12 @@ public class Parser
 			accept( Token.NEW );
 			accept( Token.IDENTIFIER );
 			accept( Token.COLONS );
-
+			accept( Token.NEWLINE );
 			parseBlock();
+			accept( Token.NEWLINE );
 			accept( Token.RESULT );
-			parseExpression();
+			accept( Token.IDENTIFIER );
+			accept( Token.NEWLINE );
 		}
 
 		else {
@@ -127,7 +137,8 @@ public class Parser
 				currentTerminal.kind == Token.INTEGERLITERAL ||
 				currentTerminal.kind == Token.LEFTPARAN ||
 				currentTerminal.kind == Token.IF ||
-				currentTerminal.kind == Token.WHILE )
+				currentTerminal.kind == Token.WHILE ||
+				currentTerminal.kind==Token.DISPLAY)
 			parseOneStatement();
 	}
 
@@ -140,18 +151,19 @@ public class Parser
 		case Token.OPERATOR:
 		case Token.LEFTPARAN:
 			parseExpression();
-			accept( Token.SEMICOLON );
 			break;
 
 		case Token.IF:
 			accept( Token.IF );
 			parseExpression();
 			accept( Token.QUESTION );
+			accept( Token.NEWLINE );
 			accept( Token.DO );
 			accept( Token.COLONS);
 			accept( Token.QUOTE );
 			parseStatements();
 			accept( Token.QUOTE );
+			accept( Token.NEWLINE );
 
 			if( currentTerminal.kind == Token.ELSE ) {
 				accept( Token.ELSE );
@@ -159,6 +171,7 @@ public class Parser
 				accept( Token.QUOTE );
 				parseStatements();
 				accept( Token.QUOTE );
+				accept( Token.NEWLINE );
 			}
 
 			break;
@@ -167,14 +180,27 @@ public class Parser
 			accept( Token.WHILE );
 			parseExpression();
 			accept( Token.QUESTION );
+			accept( Token.NEWLINE );
 			accept( Token.DO );
 			accept( Token.COLONS );
 			accept( Token.QUOTE );
 			parseStatements();
 			accept( Token.QUOTE );
+			accept( Token.NEWLINE );
 			break;
 
-
+		case Token.DISPLAY:
+			accept( Token.DISPLAY);
+			accept(Token.IDENTIFIER);
+			parseExpressionList();
+			/*if(currentTerminal.kind==Token.LEFTPARAN) {
+				accept(Token.LEFTPARAN);
+				parseExpressionList();
+				accept(Token.RIGHTPARAN);
+			}*/
+			accept( Token.NEWLINE );
+			break;
+			
 		default:
 			System.out.println( "Error in statement" );
 			break;
@@ -209,22 +235,26 @@ public class Parser
 
 
 				accept( Token.RIGHTPARAN );
+				accept( Token.NEWLINE );
 			}
 			break;
 
 		case Token.INTEGERLITERAL:
 			accept( Token.INTEGERLITERAL );
+			accept( Token.NEWLINE );
 			break;
 
 		case Token.OPERATOR:
 			accept( Token.OPERATOR );
 			parsePrimary();
+			accept( Token.NEWLINE );
 			break;
 
 		case Token.LEFTPARAN:
 			accept( Token.LEFTPARAN );
-			parseExpression();
+			parseExpressionList();
 			accept( Token.RIGHTPARAN );
+			accept( Token.NEWLINE );
 			break;
 
 		default:
@@ -246,9 +276,11 @@ public class Parser
 
 	private void accept( byte expected )
 	{
-		if( currentTerminal.kind == expected )
+		System.out.println(currentTerminal.kind);
+		if( currentTerminal.kind == expected ) 
 			currentTerminal = scan.scan();
+
 		else
-			System.out.println( "Expected token of kind " + expected );
+			System.out.println( "Expected token of kind " + expected + " instead of "+currentTerminal.kind);
 	}
 }

@@ -77,7 +77,7 @@ public class Token
 	public static final byte QUOTE = 16;
 	public static final byte COLONS = 17;
 	public static final byte COMMA = 18;
-	public static final byte SEMICOLON = 19;
+	public static final byte NEWLINE = 19;
 	public static final byte LEFTPARAN = 20;
 	public static final byte RIGHTPARAN = 21;
 	public static final byte QUESTION = 22;
@@ -113,7 +113,7 @@ public class Token
 		"\"",
 		":",
 		",",
-		";",
+		"/n",
 		"(",
 		")",
 		"?",
