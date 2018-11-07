@@ -114,6 +114,9 @@ public class Scanner
 		case '=':
 			takeIt();
 			return Token.OPERATOR;
+		case '#':
+			takeIt();
+			return Token.OPERATOR;
 
 		case SourceFile.EOT:
 			return Token.EOT;
@@ -127,7 +130,7 @@ public class Scanner
 
 	public Token scan()
 	{
-		while( currentChar == '#'  || currentChar == '\r' || currentChar == '\t' || currentChar == ' ' )
+		while( currentChar == '~'  || currentChar == '\r' || currentChar == '\t' || currentChar == ' ' )
 			scanSeparator();
 		if (currentChar=='\n') {
 			while(currentChar=='\n' || currentChar==' ' || currentChar=='\r' || currentChar=='\t') {

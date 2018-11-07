@@ -39,17 +39,14 @@ public class Parser
 		accept( Token.QUOTE );
 		accept( Token.VARIABLES );
 		accept( Token.COLONS );
-		accept( Token.NEWLINE );
 		parseDeclarations();
 		if(currentTerminal.kind == Token.FUNCTIONS  ) {
 			accept( Token.FUNCTIONS );
 			accept( Token.COLONS );
-			accept( Token.NEWLINE );
 			parseFunctions();
 		}
 		accept( Token.EXECUTE );
 		accept( Token.COLONS );
-		accept( Token.NEWLINE );
 		parseStatements();
 		accept( Token.QUOTE );
 	}
@@ -57,6 +54,7 @@ public class Parser
 
 	private void parseDeclarations()
 	{
+		removeNewLine();
 		while( currentTerminal.kind == Token.NEW  )
 			parseOneDeclaration();
 	}
@@ -92,6 +90,7 @@ public class Parser
 
 	private void parseFunctions()
 	{
+		removeNewLine();
 		while( currentTerminal.kind == Token.NEW )
 			parseOneFunction();
 	}
@@ -103,7 +102,6 @@ public class Parser
 			accept( Token.NEW );
 			accept( Token.IDENTIFIER );
 			accept( Token.COLONS );
-			accept( Token.NEWLINE );
 			parseBlock();
 			accept( Token.NEWLINE );
 			accept( Token.RESULT );
@@ -132,6 +130,7 @@ public class Parser
 
 	private void parseStatements()
 	{
+		removeNewLine();
 		while( currentTerminal.kind == Token.IDENTIFIER ||
 				currentTerminal.kind == Token.OPERATOR ||
 				currentTerminal.kind == Token.INTEGERLITERAL ||
@@ -151,19 +150,17 @@ public class Parser
 		case Token.OPERATOR:
 		case Token.LEFTPARAN:
 			parseExpression();
+			accept(Token.NEWLINE);
 			break;
 
 		case Token.IF:
 			accept( Token.IF );
 			parseExpression();
-			accept( Token.QUESTION );
-			accept( Token.NEWLINE );
 			accept( Token.DO );
 			accept( Token.COLONS);
 			accept( Token.QUOTE );
 			parseStatements();
 			accept( Token.QUOTE );
-			accept( Token.NEWLINE );
 
 			if( currentTerminal.kind == Token.ELSE ) {
 				accept( Token.ELSE );
@@ -171,34 +168,24 @@ public class Parser
 				accept( Token.QUOTE );
 				parseStatements();
 				accept( Token.QUOTE );
-				accept( Token.NEWLINE );
 			}
-
+			accept(Token.NEWLINE);
 			break;
 
 		case Token.WHILE:
 			accept( Token.WHILE );
 			parseExpression();
-			accept( Token.QUESTION );
-			accept( Token.NEWLINE );
 			accept( Token.DO );
 			accept( Token.COLONS );
 			accept( Token.QUOTE );
 			parseStatements();
 			accept( Token.QUOTE );
-			accept( Token.NEWLINE );
+			accept(Token.NEWLINE);
 			break;
 
 		case Token.DISPLAY:
 			accept( Token.DISPLAY);
 			accept(Token.IDENTIFIER);
-			parseExpressionList();
-			/*if(currentTerminal.kind==Token.LEFTPARAN) {
-				accept(Token.LEFTPARAN);
-				parseExpressionList();
-				accept(Token.RIGHTPARAN);
-			}*/
-			accept( Token.NEWLINE );
 			break;
 			
 		default:
@@ -211,9 +198,13 @@ public class Parser
 	private void parseExpression()
 	{
 		parsePrimary();
-		while( currentTerminal.kind == Token.OPERATOR ) {
-			accept( Token.OPERATOR );
-			parsePrimary();
+		while( currentTerminal.kind == Token.OPERATOR || currentTerminal.kind==Token.QUESTION) {
+			if(currentTerminal.kind==Token.QUESTION) {
+				accept(Token.QUESTION);}
+			else {
+				accept( Token.OPERATOR );
+				parsePrimary();
+			}
 		}
 	}
 
@@ -235,28 +226,39 @@ public class Parser
 
 
 				accept( Token.RIGHTPARAN );
-				accept( Token.NEWLINE );
+				if (currentTerminal.kind==Token.QUOTE)
+					accept( Token.QUOTE );
 			}
 			break;
 
 		case Token.INTEGERLITERAL:
 			accept( Token.INTEGERLITERAL );
-			accept( Token.NEWLINE );
+			if (currentTerminal.kind==Token.QUOTE)
+				accept( Token.QUOTE );
 			break;
 
 		case Token.OPERATOR:
 			accept( Token.OPERATOR );
 			parsePrimary();
-			accept( Token.NEWLINE );
+			if (currentTerminal.kind==Token.QUOTE)
+				accept( Token.QUOTE );
 			break;
 
 		case Token.LEFTPARAN:
 			accept( Token.LEFTPARAN );
 			parseExpressionList();
 			accept( Token.RIGHTPARAN );
-			accept( Token.NEWLINE );
+			if (currentTerminal.kind==Token.QUOTE)
+				accept( Token.QUOTE );
 			break;
 
+		/*case Token.QUESTION:
+			accept(Token.QUESTION);
+			if (currentTerminal.kind==Token.QUOTE)
+				accept( Token.QUOTE );
+			accept( Token.NEWLINE );
+			break;*/
+			
 		default:
 			System.out.println( "Error in primary" );
 			break;
@@ -266,6 +268,7 @@ public class Parser
 
 	private void parseExpressionList()
 	{
+		removeNewLine();
 		parseExpression();
 		while( currentTerminal.kind == Token.COMMA ) {
 			accept( Token.COMMA );
@@ -276,11 +279,20 @@ public class Parser
 
 	private void accept( byte expected )
 	{
-		System.out.println(currentTerminal.kind);
+		System.out.println(currentTerminal.spelling);
+		while (currentTerminal.kind == Token.NEWLINE && currentTerminal.kind != expected) {
+			currentTerminal = scan.scan();
+		}
 		if( currentTerminal.kind == expected ) 
 			currentTerminal = scan.scan();
 
 		else
 			System.out.println( "Expected token of kind " + expected + " instead of "+currentTerminal.kind);
+	}
+	
+	
+	private void removeNewLine() {
+		while (currentTerminal.kind == Token.NEWLINE) 
+			currentTerminal = scan.scan();
 	}
 }

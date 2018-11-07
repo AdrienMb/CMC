@@ -101,7 +101,7 @@ public class Token
 		"new",
 		"if",
 		"do",
-		"else do",
+		"else",
 		"while",
 		"declare",
 		"result",
