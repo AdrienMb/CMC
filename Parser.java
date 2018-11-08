@@ -160,7 +160,8 @@ public class Parser
 			accept( Token.COLONS);
 			accept( Token.QUOTE );
 			parseStatements();
-
+			accept( Token.QUOTE );
+			removeNewLine();
 			if( currentTerminal.kind == Token.ELSE ) {
 				accept( Token.ELSE );
 				accept( Token.COLONS );
@@ -226,30 +227,31 @@ public class Parser
 
 
 				accept( Token.RIGHTPARAN );
-				if (currentTerminal.kind==Token.QUOTE)
-					accept( Token.QUOTE );
+				/*if (currentTerminal.kind==Token.QUOTE)
+					accept( Token.QUOTE );*/
 			}
 			break;
 
 		case Token.INTEGERLITERAL:
 			accept( Token.INTEGERLITERAL );
-			if (currentTerminal.kind==Token.QUOTE)
-				accept( Token.QUOTE );
+			/*if (currentTerminal.kind==Token.QUOTE)
+				accept( Token.QUOTE );*/
 			break;
 
 		case Token.OPERATOR:
 			accept( Token.OPERATOR );
 			parsePrimary();
-			if (currentTerminal.kind==Token.QUOTE)
-				accept( Token.QUOTE );
+			/*if (currentTerminal.kind==Token.QUOTE)
+				accept( Token.QUOTE );*/
 			break;
 
 		case Token.LEFTPARAN:
 			accept( Token.LEFTPARAN );
 			parseExpressionList();
 			accept( Token.RIGHTPARAN );
+			/*
 			if (currentTerminal.kind==Token.QUOTE)
-				accept( Token.QUOTE );
+				accept( Token.QUOTE );*/
 			break;
 
 		/*case Token.QUESTION:

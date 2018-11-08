@@ -9,7 +9,7 @@
  * 01.10.2006 AST introduced
  * 28.09.2006 Original version (based on Watt&Brown)
  */
- 
+
 package dk.via.jpe.intlang;
 
 
@@ -42,38 +42,38 @@ import dk.via.jpe.intlang.ast.*;
 public class ParserAST
 {
 	private Scanner scan;
-	
-	
+
+
 	private Token currentTerminal;
-	
-	
+
+
 	public ParserAST( Scanner scan )
 	{
 		this.scan = scan;
-		
+
 		currentTerminal = scan.scan();
 	}
-	
-	
+
+
 	public AST parseProgram()
 	{
 		Block block = parseBlock();
-		
+
 		if( currentTerminal.kind != Token.EOT )
 			System.out.println( "Tokens found after end of program");
-                
+
 		return new Program( block );
 	}
-	
-	
+
+
 	private Block parseBlock()
 	{
 		accept( Token.QUOTE );
 		accept( Token.VARIABLES );
 		accept( Token.COLONS );
 		Declarations decs = parseDeclarations();
-                
-                Functions funcs = new Functions();
+
+		Functions funcs = new Functions();
 		if(currentTerminal.kind == Token.FUNCTIONS  ) {
 			accept( Token.FUNCTIONS );
 			accept( Token.COLONS );
@@ -83,19 +83,19 @@ public class ParserAST
 		accept( Token.COLONS );
 		Statements stats = parseStatements();
 		accept( Token.QUOTE );
-                
-                return new Block( decs, stats, funcs );
+
+		return new Block( decs, stats, funcs );
 	}
 
 
 	private Declarations parseDeclarations()
 	{
-            Declarations decs = new Declarations();
+		Declarations decs = new Declarations();
 		removeNewLine();
 		while( currentTerminal.kind == Token.NEW  )
 			decs.dec.add( parseOneDeclaration() );
-                
-                return decs;
+
+		return decs;
 	}
 
 
@@ -107,43 +107,43 @@ public class ParserAST
 				accept( Token.INT );
 				Identifier id = parseIdentifier();
 				accept( Token.NEWLINE );
-                                
-                                return new VariableDeclaration( id );
+
+				return new VariableDeclaration( id );
 			}
 			else if(currentTerminal.kind==Token.BOOLEAN) {
 				accept( Token.BOOLEAN );
 				Identifier id = parseIdentifier();
 				accept( Token.NEWLINE );
-                                
-                                return new VariableDeclaration( id );
+
+				return new VariableDeclaration( id );
 			}
 			else if(currentTerminal.kind==Token.TAB) {
 				accept( Token.TAB );
 				Identifier id = parseIdentifier();
 				accept( Token.NEWLINE );
-                                
-                                return new VariableDeclaration( id );
+
+				return new VariableDeclaration( id );
 			}
 			else {
 				System.out.println( "int, boolean or tab expected" );
-                                return null;
+				return null;
 			}
 		}
 		else {
 			System.out.println( "new expected" );
-                        return null;
+			return null;
 		}
 	}
 
 	private Functions parseFunctions()
 	{
-            Functions funcs = new Functions();
-            
+		Functions funcs = new Functions();
+
 		removeNewLine();
 		while( currentTerminal.kind == Token.NEW )
 			funcs.func.add( parseOneFunction() );
-                
-                return funcs;
+
+		return funcs;
 	}
 
 
@@ -158,13 +158,13 @@ public class ParserAST
 			accept( Token.RESULT );
 			Expression retExp = parseExpression();
 			accept( Token.NEWLINE );
-                        
-                        return new FunctionDeclaration(name, block, retExp);
+
+			return new FunctionDeclaration(name, block, retExp);
 		}
 
 		else {
 			System.out.println( "var or func expected" );
-                        return null;
+			return null;
 		}
 	}
 
@@ -184,9 +184,9 @@ public class ParserAST
 
 	private Statements parseStatements()
 	{
-            
-            Statements stats = new Statements();
-            
+
+		Statements stats = new Statements();
+
 		removeNewLine();
 		while( currentTerminal.kind == Token.IDENTIFIER ||
 				currentTerminal.kind == Token.OPERATOR ||
@@ -196,8 +196,8 @@ public class ParserAST
 				currentTerminal.kind == Token.WHILE ||
 				currentTerminal.kind==Token.DISPLAY)
 			stats.stat.add( parseOneStatement() );
-                
-                return stats;
+
+		return stats;
 	}
 
 
@@ -219,8 +219,9 @@ public class ParserAST
 			accept( Token.COLONS);
 			accept( Token.QUOTE );
 			Statements thenPart = parseStatements();
-                        
-                        Statements elsePart = null;
+			accept( Token.QUOTE );
+			removeNewLine();
+			Statements elsePart = null;
 			if( currentTerminal.kind == Token.ELSE ) {
 				accept( Token.ELSE );
 				accept( Token.COLONS );
@@ -230,7 +231,7 @@ public class ParserAST
 			}
 			removeNewLine();
 			return new IfStatement( ifExp, thenPart, elsePart );
-                        
+
 		case Token.WHILE:
 			accept( Token.WHILE );
 			Expression whileExp = parseExpression();
@@ -240,16 +241,16 @@ public class ParserAST
 			Statements stats = parseStatements();
 			accept( Token.QUOTE );
 			accept(Token.NEWLINE);
-                        
+
 			return new WhileStatement( whileExp, stats );
 
 		case Token.DISPLAY:
 			accept( Token.DISPLAY);
 			Expression displayExp = parseExpression();
-                        accept( Token.NEWLINE );
+			accept( Token.NEWLINE );
 
-                        return new DisplayStatement( displayExp );
-			
+			return new DisplayStatement( displayExp );
+
 		default:
 			System.out.println( "Error in statement" );
 			return null;
@@ -266,10 +267,10 @@ public class ParserAST
 			else {                              
 				Operator op = parseOperator();
 				Expression tmp = parsePrimary();
-                                res = new BinaryExpression( op, res, tmp );
+				res = new BinaryExpression( op, res, tmp );
 			}
 		}
-                return res;
+		return res;
 	}
 
 
@@ -281,126 +282,119 @@ public class ParserAST
 
 			if( currentTerminal.kind == Token.LEFTPARAN ) {
 				accept( Token.LEFTPARAN );
-                                
-                                ExpList args;
+
+				ExpList args;
 
 				if( currentTerminal.kind == Token.IDENTIFIER ||
 						currentTerminal.kind == Token.INTEGERLITERAL ||
 						currentTerminal.kind == Token.OPERATOR ||
 						currentTerminal.kind == Token.LEFTPARAN )
 					args = parseExpressionList();
-                                else
-                                        args = new ExpList();
-                                
- 
+				else
+					args = new ExpList();
+
+
 
 				accept( Token.RIGHTPARAN );
-				if (currentTerminal.kind==Token.QUOTE)
-					accept( Token.QUOTE );
-                                return new CallExpression( name, args );
+				return new CallExpression( name, args );
 			}
-                        else
-                           return new VarExpression( name );
+			else
+				return new VarExpression( name );
 
 		case Token.INTEGERLITERAL:
 			IntegerLiteral lit = parseIntegerLiteral();
-		
-			if (currentTerminal.kind==Token.QUOTE)
-				accept( Token.QUOTE );
-                        
+
 			return new IntLitExpression( lit );
 
 		case Token.OPERATOR:
 			Operator op = parseOperator();
 			Expression exp = parsePrimary();
-			if (currentTerminal.kind==Token.QUOTE)
-				accept( Token.QUOTE );
 			return new UnaryExpression( op, exp );
 
 		case Token.LEFTPARAN:
 			accept( Token.LEFTPARAN);
-				ExpList args;
+			ExpList args;
 
-				if( currentTerminal.kind == Token.IDENTIFIER ||
+			if( currentTerminal.kind == Token.IDENTIFIER ||
 					currentTerminal.kind == Token.INTEGERLITERAL ||
 					currentTerminal.kind == Token.OPERATOR ||
 					currentTerminal.kind == Token.LEFTPARAN )
-					args = parseExpressionList();
-                                else
-					args = new ExpList();
+				args = parseExpressionList();
+			else
+				args = new ExpList();
 
 
-				accept( Token.RIGHTPARAN );
-                                
+			accept( Token.RIGHTPARAN );
+
 			return new TabList( args );
 
-		/*case Token.QUESTION:
+			/*case Token.QUESTION:
 			accept(Token.QUESTION);
 			if (currentTerminal.kind==Token.QUOTE)
 				accept( Token.QUOTE );
 			accept( Token.NEWLINE );
 			break;*/
-			
-		default:
-			System.out.println( "Error in primary" );
-			return null;
+
+			default:
+				System.out.println( "Error in primary" );
+				return null;
 		}
 	}
 
 
 	private ExpList parseExpressionList()
 	{
-            ExpList exps = new ExpList();
-            
+		ExpList exps = new ExpList();
+
 		removeNewLine();
 		exps.exp.add( parseExpression() );
 		while( currentTerminal.kind == Token.COMMA ) {
 			accept( Token.COMMA );
 			exps.exp.add( parseExpression() );
 		}
-                
-                return exps;
+
+		return exps;
 	}
-        
-        private Identifier parseIdentifier()
+
+	private Identifier parseIdentifier()
 	{
 		if( currentTerminal.kind == Token.IDENTIFIER ) {
 			Identifier res = new Identifier( currentTerminal.spelling );
 			currentTerminal = scan.scan();
-			
+
 			return res;
 		} else {
 			System.out.println( "Identifier expected" );
-			
+
 			return new Identifier( "???" );
 		}
 	}
-        
-        private IntegerLiteral parseIntegerLiteral()
+
+	private IntegerLiteral parseIntegerLiteral()
 	{
 		if( currentTerminal.kind == Token.INTEGERLITERAL ) {
 			IntegerLiteral res = new IntegerLiteral( currentTerminal.spelling );
 			currentTerminal = scan.scan();
-			
+
 			return res;
 		} else {
 			System.out.println( "Integer literal expected" );
-			
+
 			return new IntegerLiteral( "???" );
 		}
 	}
-	
-	
+
+
 	private Operator parseOperator()
 	{
 		if( currentTerminal.kind == Token.OPERATOR ) {
 			Operator res = new Operator( currentTerminal.spelling );
 			currentTerminal = scan.scan();
-			
+
 			return res;
 		} else {
 			System.out.println( "Operator expected" );
-			
+
 			return new Operator( "???" );
 		}
 	}
@@ -418,8 +412,8 @@ public class ParserAST
 		else
 			System.out.println( "Expected token of kind " + expected + " instead of "+currentTerminal.kind);
 	}
-	
-	
+
+
 	private void removeNewLine() {
 		while (currentTerminal.kind == Token.NEWLINE) 
 			currentTerminal = scan.scan();
