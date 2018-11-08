@@ -160,7 +160,6 @@ public class Parser
 			accept( Token.COLONS);
 			accept( Token.QUOTE );
 			parseStatements();
-			accept( Token.QUOTE );
 
 			if( currentTerminal.kind == Token.ELSE ) {
 				accept( Token.ELSE );
@@ -169,7 +168,7 @@ public class Parser
 				parseStatements();
 				accept( Token.QUOTE );
 			}
-			accept(Token.NEWLINE);
+			removeNewLine();
 			break;
 
 		case Token.WHILE:
@@ -185,7 +184,8 @@ public class Parser
 
 		case Token.DISPLAY:
 			accept( Token.DISPLAY);
-			accept(Token.IDENTIFIER);
+			parseExpression();
+			accept(Token.NEWLINE);
 			break;
 			
 		default:
