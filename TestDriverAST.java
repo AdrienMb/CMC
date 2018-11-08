@@ -9,6 +9,7 @@
 package dk.via.jpe.intlang;
 
 
+import dk.via.jpe.intlang.ast.AST;
 import dk.via.jpe.intlang.ast.*;
 
 import javax.swing.*;

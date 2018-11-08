@@ -13,11 +13,13 @@ public class Block
 {
 	public Declarations decs;
 	public Statements stats;
+        public Functions funcs;
 	
 	
-	public Block( Declarations decs, Statements stats )
+	public Block( Declarations decs, Statements stats, Functions funcs )
 	{
 		this.decs = decs;
 		this.stats = stats;
+                this.funcs = funcs;
 	}
 }

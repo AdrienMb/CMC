@@ -8,13 +8,13 @@
 package dk.via.jpe.intlang.ast;
 
 
-public class SayStatement
+public class DisplayStatement
 	extends Statement
 {
 	public Expression exp;
 	
 	
-	public SayStatement( Expression exp )
+	public DisplayStatement( Expression exp )
 	{
 		this.exp = exp;
 	}

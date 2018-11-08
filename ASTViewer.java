@@ -6,6 +6,29 @@
 package dk.via.jpe.intlang;
 
 
+import dk.via.jpe.intlang.ast.Operator;
+import dk.via.jpe.intlang.ast.UnaryExpression;
+import dk.via.jpe.intlang.ast.Identifier;
+import dk.via.jpe.intlang.ast.WhileStatement;
+import dk.via.jpe.intlang.ast.Program;
+import dk.via.jpe.intlang.ast.BinaryExpression;
+import dk.via.jpe.intlang.ast.Declaration;
+import dk.via.jpe.intlang.ast.IntLitExpression;
+import dk.via.jpe.intlang.ast.Statements;
+import dk.via.jpe.intlang.ast.Declarations;
+import dk.via.jpe.intlang.ast.ExpList;
+import dk.via.jpe.intlang.ast.IntegerLiteral;
+import dk.via.jpe.intlang.ast.Block;
+import dk.via.jpe.intlang.ast.CallExpression;
+import dk.via.jpe.intlang.ast.DisplayStatement;
+import dk.via.jpe.intlang.ast.Statement;
+import dk.via.jpe.intlang.ast.Expression;
+import dk.via.jpe.intlang.ast.VariableDeclaration;
+import dk.via.jpe.intlang.ast.VarExpression;
+import dk.via.jpe.intlang.ast.AST;
+import dk.via.jpe.intlang.ast.IfStatement;
+import dk.via.jpe.intlang.ast.ExpressionStatement;
+import dk.via.jpe.intlang.ast.Function;
 import dk.via.jpe.intlang.ast.*;
 
 import java.awt.*;
@@ -42,14 +65,16 @@ public class ASTViewer
 	{
 		DefaultMutableTreeNode node = new DefaultMutableTreeNode( "*** WHAT??? ***" );
 		
-		if( ast == null )
+		if( ast == null ) {
 			node.setUserObject( "*** NULL ***" );
+                }
 		else if( ast instanceof Program ) {
 			node.setUserObject( "Program" );
 			node.add( createTree( ((Program)ast).block ) );
 		} else if( ast instanceof Block ) {
 			node.setUserObject( "Block" );
 			node.add( createTree( ((Block)ast).decs ) );
+                        node.add( createTree( ((Block)ast).funcs ) );
 			node.add( createTree( ((Block)ast).stats ) );
 		} else if( ast instanceof Declarations ) {
 			node.setUserObject( "Declarations" );
@@ -59,10 +84,14 @@ public class ASTViewer
 		} else if( ast instanceof VariableDeclaration ) {
 			node.setUserObject( "VariableDeclaration" );
 			node.add( createTree( ((VariableDeclaration)ast).id ) );
-		} else if( ast instanceof FunctionDeclaration ) {
+		} else if( ast instanceof Functions ) {
+                        node.setUserObject( "Functions" );
+                    
+			for( Function f: ((Functions)ast).func )
+				node.add( createTree( f ) );
+                } else if( ast instanceof FunctionDeclaration ) {
 			node.setUserObject( "FunctionDeclaration" );
 			node.add( createTree( ((FunctionDeclaration)ast).name ) );
-			node.add( createTree( ((FunctionDeclaration)ast).params ) );
 			node.add( createTree( ((FunctionDeclaration)ast).block ) );
 			node.add( createTree( ((FunctionDeclaration)ast).retExp ) );
 		} else if( ast instanceof Statements ) {
@@ -82,9 +111,9 @@ public class ASTViewer
 			node.setUserObject( "WhileStatement" );
 			node.add( createTree( ((WhileStatement)ast).exp ) );
 			node.add( createTree( ((WhileStatement)ast).stats ) );
-		} else if( ast instanceof SayStatement ) {
-			node.setUserObject( "SayStatement" );
-			node.add( createTree( ((SayStatement)ast).exp ) );
+		} else if( ast instanceof DisplayStatement ) {
+			node.setUserObject( "DisplayStatement" );
+			node.add(createTree(((DisplayStatement)ast).exp ) );
 		} else if( ast instanceof BinaryExpression ) {
 			node.setUserObject( "BinaryExpression" );
 			node.add( createTree( ((BinaryExpression)ast).operator ) );
@@ -94,6 +123,9 @@ public class ASTViewer
 			node.setUserObject( "CallExpression" );
 			node.add( createTree( ((CallExpression)ast).name ) );
 			node.add( createTree( ((CallExpression)ast).args ) );
+                } else if( ast instanceof TabList ) {
+			node.setUserObject( "TabList" );
+			node.add( createTree( ((TabList)ast).args ) );        
 		} else if( ast instanceof IntLitExpression ) {
 			node.setUserObject( "IntLitExpression" );
 			node.add( createTree( ((IntLitExpression)ast).literal ) );
