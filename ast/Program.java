@@ -18,4 +18,8 @@ public class Program
 	{
 		this.block = block;
 	}
+	public Object visit( Visitor v, Object arg )
+	{
+		return v.visitProgram( this, arg );
+	}
 }

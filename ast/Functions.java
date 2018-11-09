@@ -15,4 +15,8 @@ public class Functions
         extends AST
 {
 	public Vector<Function> func = new Vector<Function>();
+	public Object visit( Visitor v, Object arg )
+	{
+		return v.visitFunctions( this, arg );
+	}
 }

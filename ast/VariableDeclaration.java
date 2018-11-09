@@ -18,4 +18,9 @@ public class VariableDeclaration
 	{
 		this.id = id;
 	}
+	
+	public Object visit( Visitor v, Object arg )
+	{
+		return v.visitVariableDeclaration( this, arg );
+	}
 }

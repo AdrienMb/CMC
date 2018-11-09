@@ -18,4 +18,8 @@ public class DisplayStatement
 	{
 		this.exp = exp;
 	}
+	public Object visit( Visitor v, Object arg )
+	{
+		return null;
+	}
 }
