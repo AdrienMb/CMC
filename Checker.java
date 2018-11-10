@@ -40,6 +40,9 @@ public class Checker
 	public Object visitBlock( Block b, Object arg )
 	{
 		b.decs.visit( this, null );
+		if(b.funcs!=null) {
+			b.funcs.visit(this, null);
+		}
 		b.stats.visit( this, null );
 		
 		return null;
@@ -103,7 +106,9 @@ public class Checker
 	{
 		i.exp.visit( this, null );
 		i.thenPart.visit( this, null );
-		i.elsePart.visit( this, null );
+		if(i.elsePart!=null) {
+			i.elsePart.visit( this, null );
+		}
 		
 		return null;
 	}
@@ -228,7 +233,7 @@ public class Checker
 
 	@Override
 	public Object visitFunctions(Functions f, Object arg) {
-		// TODO Auto-generated method stub
+		
 		return null;
 	}
 
@@ -241,8 +246,11 @@ public class Checker
 
 
 	@Override
-	public Object visitFunctionDeclarations(FunctionDeclarations f, Object arg) {
-		// TODO Auto-generated method stub
-		return null;
+	public Object visitFunctionDeclarations(FunctionDeclarations fs, Object arg) {
+		Vector<Function> functions = new Vector<Function>();
+		for(FunctionDeclaration f : fs.dec) {
+			functions.add((Function) f.visit(this, null));
+		}
+		return functions;
 	}
 }
