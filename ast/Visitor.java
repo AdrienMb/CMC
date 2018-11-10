@@ -19,10 +19,6 @@ public interface Visitor
 	
 	public Object visitFunctionDeclaration( FunctionDeclaration f, Object arg );
 	
-	public Object visitFunctionDeclarations( FunctionDeclarations f, Object arg );
-	
-	public Object visitFunctions( Functions f, Object arg );
-	
 	public Object visitStatements( Statements s, Object arg );
 	
 	public Object visitTabList( TabList s, Object arg );

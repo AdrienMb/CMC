@@ -232,25 +232,9 @@ public class Checker
 
 
 	@Override
-	public Object visitFunctions(Functions f, Object arg) {
-		
-		return null;
-	}
-
-
-	@Override
 	public Object visitTabList(TabList s, Object arg) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-
-	@Override
-	public Object visitFunctionDeclarations(FunctionDeclarations fs, Object arg) {
-		Vector<Function> functions = new Vector<Function>();
-		for(FunctionDeclaration f : fs.dec) {
-			functions.add((Function) f.visit(this, null));
-		}
-		return functions;
-	}
 }

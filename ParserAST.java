@@ -73,7 +73,7 @@ public class ParserAST
 		accept( Token.COLONS );
 		Declarations decs = parseDeclarations();
 
-		FunctionDeclarations funcs=null;
+		Declarations funcs=null;
 		if(currentTerminal.kind == Token.FUNCTIONS  ) {
 			accept( Token.FUNCTIONS );
 			accept( Token.COLONS );
@@ -135,9 +135,9 @@ public class ParserAST
 		}
 	}
 
-	private FunctionDeclarations parseFunctions()
+	private Declarations parseFunctions()
 	{
-		FunctionDeclarations funcs = new FunctionDeclarations();
+		Declarations funcs = new Declarations();
 
 		removeNewLine();
 		while( currentTerminal.kind == Token.NEW )

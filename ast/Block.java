@@ -13,10 +13,10 @@ extends AST
 {
 	public Declarations decs;
 	public Statements stats;
-	public FunctionDeclarations funcs;
+	public Declarations funcs;
 
 
-	public Block( Declarations decs, Statements stats, FunctionDeclarations funcs )
+	public Block( Declarations decs, Statements stats, Declarations funcs )
 	{
 		this.decs = decs;
 		this.stats = stats;
