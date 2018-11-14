@@ -5,6 +5,7 @@
  */
 package dk.via.jpe.intlang.ast;
 
+import dk.via.jpe.intlang.*;
 /**
  *
  * @author Romain
@@ -12,6 +13,7 @@ package dk.via.jpe.intlang.ast;
 public class FunctionDeclaration 
 extends Declaration
 {
+	public Address address;
 	public Identifier name;
 	public Declarations params;
 	public Block block;

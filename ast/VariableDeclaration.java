@@ -7,12 +7,14 @@
  
 package dk.via.jpe.intlang.ast;
 
+import dk.via.jpe.intlang.*;
 
 public class VariableDeclaration
 	extends Declaration
 {
 	public Identifier id;
 	
+	public Address adr;
 	
 	public VariableDeclaration( Identifier id )
 	{
