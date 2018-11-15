@@ -8,15 +8,18 @@
 package dk.via.jpe.intlang.ast;
 
 
-import java.util.*;
-
-
-public class Statements
-	extends AST
+public class SayStatement
+	extends Statement
 {
-	public Vector<Statement> stat = new Vector<Statement>();
+	public Expression exp;
+	
+	
+	public SayStatement( Expression exp )
+	{
+		this.exp = exp;
+	}
 	public Object visit( Visitor v, Object arg )
 	{
-		return v.visitStatements( this, arg );
+		return v.visitSayStatement( this, arg );
 	}
 }

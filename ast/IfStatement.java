@@ -22,4 +22,8 @@ public class IfStatement
 		this.thenPart = thenPart;
 		this.elsePart = elsePart;
 	}
+	public Object visit( Visitor v, Object arg )
+	{
+		return v.visitIfStatement( this, arg );
+	}
 }

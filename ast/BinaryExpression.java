@@ -22,4 +22,8 @@ public class BinaryExpression
 		this.operand1 = operand1;
 		this.operand2 = operand2;
 	}
+	public Object visit( Visitor v, Object arg )
+	{
+            return v.visitBinaryExpression( this, arg );
+	}
 }

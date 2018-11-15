@@ -19,4 +19,8 @@ public class TabList
 	{
 		this.args = args;
 	}
+	public Object visit( Visitor v, Object arg )
+	{
+		return v.visitTabList( this, arg );
+	}
 }

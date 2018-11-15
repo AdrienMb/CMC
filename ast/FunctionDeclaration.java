@@ -5,21 +5,30 @@
  */
 package dk.via.jpe.intlang.ast;
 
+import dk.via.jpe.intlang.*;
 /**
  *
  * @author Romain
  */
 public class FunctionDeclaration 
-    	extends Function
+extends Declaration
 {
+	public Address address;
 	public Identifier name;
+	public Declarations params;
 	public Block block;
 	public Expression retExp;
-	
 
-        public FunctionDeclaration(Identifier name, Block block, Expression retExp) {
-                this.name = name;
-                this.block = block;
-                this.retExp = retExp;
-        }
+
+	public FunctionDeclaration(Identifier name, Declarations params, Block block, Expression retExp) {
+		this.name = name;
+		this.params = params;
+		this.block = block;
+		this.retExp = retExp;
+	}
+	public Object visit( Visitor v, Object arg )
+	{
+                System.out.println(arg);
+		return v.visitFunctionDeclaration( this, arg );
+	}
 }

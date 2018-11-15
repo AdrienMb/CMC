@@ -39,7 +39,7 @@ import dk.via.jpe.intlang.ast.ExpressionStatement;
 import dk.via.jpe.intlang.ast.*;
 
 
-public class ParserAST
+public class ParserOperatorPrecedence
 {
 	private Scanner scan;
 
@@ -47,7 +47,7 @@ public class ParserAST
 	private Token currentTerminal;
 
 
-	public ParserAST( Scanner scan )
+	public ParserOperatorPrecedence( Scanner scan )
 	{
 		this.scan = scan;
 

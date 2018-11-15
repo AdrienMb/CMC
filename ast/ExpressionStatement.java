@@ -18,4 +18,8 @@ public class ExpressionStatement
 	{
 		this.exp = exp;
 	}
+	public Object visit( Visitor v, Object arg )
+	{
+		return v.visitExpressionStatement( this, arg );
+	}
 }

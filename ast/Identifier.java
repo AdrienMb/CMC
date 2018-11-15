@@ -15,4 +15,8 @@ public class Identifier
 	{
 		this.spelling = spelling;
 	}
+	public Object visit( Visitor v, Object arg )
+	{
+		return v.visitIdentifier( this, arg );
+	}
 }

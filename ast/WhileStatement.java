@@ -20,4 +20,8 @@ public class WhileStatement
 		this.exp = exp;
 		this.stats = stats;
 	}
+	public Object visit( Visitor v, Object arg )
+	{
+		return v.visitWhileStatement( this, arg );
+	}
 }
