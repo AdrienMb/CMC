@@ -100,9 +100,10 @@ public class Encoder
 		int size = ((Integer) b.decs.visit( this, arg )).intValue();
 		
 		patch( before, nextAdr );
+		
 		if( size > 0 )
 			emit( Machine.PUSHop, 0, 0, size );
-
+		
 		b.stats.visit( this, null );
 		
 		return size;
@@ -210,7 +211,7 @@ public class Encoder
 	}
 	
 	
-	public Object visitSayStatement( SayStatement s, Object arg )
+	public Object visitDisplayStatement( DisplayStatement s, Object arg )
 	{
 		s.exp.visit( this, new Boolean( true ) );
 		
@@ -225,41 +226,45 @@ public class Encoder
 	{
 		boolean valueNeeded = ((Boolean) arg).booleanValue();
                 
-                System.out.println("valueNeeded : "+valueNeeded);
+                //System.out.println("valueNeeded : "+valueNeeded);
+
 		
 		String op = (String) b.operator.visit( this, null );
+                
+                System.out.println(op);
+                System.out.println("valueNeeded : "+arg);
 		
 		if( op.equals( "<-" ) ) {
 			Address adr = (Address) b.operand1.visit( this, new Boolean( false ) );
 			b.operand2.visit( this, new Boolean( true ) );
                         
-                        System.out.println(b.operand2);
-			                        
+                        // System.out.println(b.operand2);
+                        			
 			int register = displayRegister( currentLevel, adr.level );
 			emit( Machine.STOREop, 1, register, adr.displacement );
 			
-			if( valueNeeded ){
+			if( valueNeeded )
 				emit( Machine.LOADop, 1, register, adr.displacement );
-                        }
 		} else {
-                    System.out.println("arg : "+arg);
+                    
+                        //System.out.println("arg : "+arg);
 			b.operand1.visit( this, arg );
 			b.operand2.visit( this, arg );
 			
-			if( true )
+			if( valueNeeded ) {
+                            System.out.println("ok");
 				if( op.equals( "+" ) )
 					emit( Machine.CALLop, 0, Machine.PBr, Machine.addDisplacement );
 				else if( op.equals( "-" ) )
 					emit( Machine.CALLop, 0, Machine.PBr, Machine.subDisplacement );
-				else if( op.equals( "*" ) ){
-                                        System.out.println("ici");
+				else if( op.equals( "*" ) )
 					emit( Machine.CALLop, 0, Machine.PBr, Machine.multDisplacement );
-                                }
-                                else if( op.equals( "/" ) )
+				else if( op.equals( "/" ) )
 					emit( Machine.CALLop, 0, Machine.PBr, Machine.divDisplacement );
 				else if( op.equals( "%" ) )
 					emit( Machine.CALLop, 0, Machine.PBr, Machine.modDisplacement );
-		}
+                        }        
+                }
 		
 		return null;
 	}

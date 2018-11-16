@@ -29,7 +29,7 @@ public interface Visitor
 	
 	public Object visitWhileStatement( WhileStatement w, Object arg );
 	
-	public Object visitSayStatement( SayStatement s, Object arg );
+	public Object visitDisplayStatement( DisplayStatement s, Object arg );
 	
 	public Object visitBinaryExpression( BinaryExpression b, Object arg );
 	

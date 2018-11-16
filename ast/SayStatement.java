@@ -18,8 +18,10 @@ public class SayStatement
 	{
 		this.exp = exp;
 	}
-	public Object visit( Visitor v, Object arg )
-	{
-		return v.visitSayStatement( this, arg );
-	}
+
+    @Override
+    public Object visit(Visitor v, Object arg) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }

@@ -261,7 +261,7 @@ public class ParserOperatorPrecedence
 	private Expression parseExpression()
 	{
 		Expression res = parsePrimary();
-		while( currentTerminal.kind == Token.OPERATOR || currentTerminal.kind==Token.QUESTION) {
+		while( currentTerminal.isAssignOperator() || currentTerminal.kind==Token.QUESTION) {
 			if(currentTerminal.kind==Token.QUESTION) {
 				accept(Token.QUESTION);}
 			else {                              
@@ -272,6 +272,39 @@ public class ParserOperatorPrecedence
 		}
 		return res;
 	}
+        
+        private Expression parseExpression1()
+	{
+		Expression res = parsePrimary();
+		while( currentTerminal.isAddOperator() || currentTerminal.kind==Token.QUESTION) {
+			if(currentTerminal.kind==Token.QUESTION) {
+				accept(Token.QUESTION);}
+			else { 
+                                System.out.println("add");
+				Operator op = parseOperator();
+				Expression tmp = parseExpression2();
+				res = new BinaryExpression( op, res, tmp );
+			}
+		}
+		return res;
+	}
+        
+        private Expression parseExpression2()
+	{
+		Expression res = parsePrimary();
+		while( currentTerminal.isMulOperator() || currentTerminal.kind==Token.QUESTION) {
+			if(currentTerminal.kind==Token.QUESTION) {
+				accept(Token.QUESTION);}
+			else {                              
+				Operator op = parseOperator();
+				Expression tmp = parsePrimary();
+				res = new BinaryExpression( op, res, tmp );
+			}
+		}
+		return res;
+	}
+        
+        
 
 
 	private Expression parsePrimary()
@@ -389,7 +422,8 @@ public class ParserOperatorPrecedence
 	{
 		if( currentTerminal.kind == Token.OPERATOR ) {
 			Operator res = new Operator( currentTerminal.spelling );
-			currentTerminal = scan.scan();
+                        System.out.println("op : "+res.spelling);
+                        currentTerminal = scan.scan();
 
 			return res;
 		} else {

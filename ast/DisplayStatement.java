@@ -20,6 +20,6 @@ public class DisplayStatement
 	}
 	public Object visit( Visitor v, Object arg )
 	{
-		return null;
-	}
+            return v.visitDisplayStatement( this, arg );
+        }
 }

@@ -123,7 +123,7 @@ public class Checker
 	}
 	
 	
-	public Object visitSayStatement( SayStatement s, Object arg )
+	public Object visitDisplayStatement( DisplayStatement s, Object arg )
 	{
 		s.exp.visit( this, null );
 		
