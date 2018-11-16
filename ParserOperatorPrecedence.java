@@ -260,13 +260,13 @@ public class ParserOperatorPrecedence
 
 	private Expression parseExpression()
 	{
-		Expression res = parsePrimary();
-		while( currentTerminal.isAssignOperator() || currentTerminal.kind==Token.QUESTION) {
+		Expression res = parseExpression1();
+		if( currentTerminal.isAssignOperator() || currentTerminal.kind==Token.QUESTION) {
 			if(currentTerminal.kind==Token.QUESTION) {
 				accept(Token.QUESTION);}
 			else {                              
 				Operator op = parseOperator();
-				Expression tmp = parsePrimary();
+				Expression tmp = parseExpression();
 				res = new BinaryExpression( op, res, tmp );
 			}
 		}
