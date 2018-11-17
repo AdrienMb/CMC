@@ -46,7 +46,7 @@ public class Scanner
 	private void scanSeparator()
 	{
 		switch( currentChar ) {
-		case '#':
+		case '$':
 			takeIt();
 			while( currentChar != SourceFile.EOL && currentChar != SourceFile.EOT )
 				takeIt();
@@ -79,7 +79,7 @@ public class Scanner
 			return Token.INTEGERLITERAL;
 
 		} switch( currentChar ) {
-		case '+': case '-': case '*': case '/': case '%':
+		case '+': case '-': case '*': case '/': case '%': case '>':
 			takeIt();
 			return Token.OPERATOR;
 
@@ -89,7 +89,7 @@ public class Scanner
 				takeIt();
 				return Token.OPERATOR;
 			} else
-				return Token.ERROR;
+				return Token.OPERATOR;
 
 		case ',':
 			takeIt();

@@ -276,11 +276,11 @@ public class ParserOperatorPrecedence
         private Expression parseExpression1()
 	{
 		Expression res = parsePrimary();
-		while( currentTerminal.isAddOperator() || currentTerminal.kind==Token.QUESTION) {
+		while( currentTerminal.isAddOperator() ||  currentTerminal.isCompareOperator() || currentTerminal.kind==Token.QUESTION) {
 			if(currentTerminal.kind==Token.QUESTION) {
 				accept(Token.QUESTION);}
 			else { 
-                                System.out.println("add");
+                                System.out.println("add or compare");
 				Operator op = parseOperator();
 				Expression tmp = parseExpression2();
 				res = new BinaryExpression( op, res, tmp );

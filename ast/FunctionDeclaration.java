@@ -28,7 +28,6 @@ extends Declaration
 	}
 	public Object visit( Visitor v, Object arg )
 	{
-                System.out.println(arg);
 		return v.visitFunctionDeclaration( this, arg );
 	}
 }
