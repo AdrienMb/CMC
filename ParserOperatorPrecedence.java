@@ -279,6 +279,7 @@ public class ParserOperatorPrecedence {
                 Identifier name = parseIdentifier();
 
                 if (currentTerminal.kind == Token.LEFTPARAN) {
+                	accept(Token.LEFTPARAN);
                     if (currentTerminal.kind == Token.EXCLAMATION) {
                         accept(Token.EXCLAMATION);
                         Expression arg = null;

@@ -1,9 +1,3 @@
-/*
- * 04.10.2016 Minor edit
- * 11.11.2009 New package structure
- * 26.10.2006 Original version (based on Watt&Brown)
- */
-
 package dk.via.jpe.intlang;
 
 
@@ -96,22 +90,20 @@ implements Visitor
 	{
 		int before = nextAdr;
 		emit( Machine.JUMPop, 0, Machine.CB, 0 );
-                
-                int startDisplacement = ((Address) arg).displacement;
 
-                Address adr = (Address) b.decs.visit( this, arg );
-                
-                int size = (((Integer) adr.displacement).intValue()) - startDisplacement;
-                
-                if(b.funcs != null) {
-                    b.funcs.visit(this, adr);
-                }
-                    
-                
-                
+		int startDisplacement = ((Address) arg).displacement;
+
+		Address adr = (Address) b.decs.visit( this, arg );
+
+		int size = (((Integer) adr.displacement).intValue()) - startDisplacement;
+		emit( Machine.JUMPop, 0, Machine.CB, 0 );
+		if(b.funcs != null) {
+			b.funcs.visit(this, adr);
+		}
 		patch( before, nextAdr );
 
-		if( size > 0 )
+		if( size > 0)
+			//
 			emit( Machine.PUSHop, 0, 0, size );
 
 		b.stats.visit( this, null );
@@ -126,7 +118,7 @@ implements Visitor
 
 		for( Declaration dec : d.dec ) {
 			arg = dec.visit( this, arg );
-                }
+		}
 
 		Address adr = (Address) arg;
 
@@ -148,15 +140,15 @@ implements Visitor
 		f.address = new Address( currentLevel, nextAdr );
 
 		++currentLevel;
-                
-                Address adr = new Address( (Address) arg );
-                
-                int startDisplacement = ((Address) adr).displacement;
 
-                Address adrDis = (Address) f.params.visit( this, adr );
-                                
-                int size = (((Integer) adrDis.displacement).intValue()) - startDisplacement;
-                                
+		Address adr = new Address( (Address) arg );
+
+		int startDisplacement = ((Address) adr).displacement;
+
+		Address adrDis = (Address) f.params.visit( this, adr );
+
+		int size = (((Integer) adrDis.displacement).intValue()) - startDisplacement;
+
 		f.params.visit( this, new Address( adr, -size ) );
 
 		f.block.visit( this, new Address( adr, Machine.linkDataSize ) );
@@ -273,7 +265,7 @@ implements Visitor
 				else if( op.equals( "=" ) ) {
 					emit( Machine.PUSHop, 0, Machine.PBr, Machine.newDisplacement );
 					emit( Machine.CALLop, 0, Machine.PBr, Machine.eqDisplacement );
-					}
+				}
 				else if( op.equals( "#" ) ){
 					emit( Machine.PUSHop, 0, Machine.PBr, Machine.newDisplacement );
 					emit( Machine.CALLop, 0, Machine.PBr, Machine.neDisplacement );
@@ -312,6 +304,18 @@ implements Visitor
 		Address adr = c.decl.address;
 
 		int register = displayRegister( currentLevel, adr.level );
+
+		for(Expression arg0 : c.args.exp) {
+			for(Declaration var0 : c.decl.params.dec) {
+				IntLitExpression argVar = (IntLitExpression) arg0;
+				VariableDeclaration vard = (VariableDeclaration) var0;
+				//emit( Machine.PUSHop, 0, currentLevel, 1 );
+				int register2 = displayRegister(vard.adr.level,  vard.adr.level);
+				emit( Machine.LOADLop, 1, register, Integer.parseInt(argVar.literal.spelling));
+
+				emit( Machine.STOREop, 1, register2, vard.adr.displacement);
+			}
+		}
 
 		emit( Machine.CALLop, register, Machine.CB, adr.displacement );
 
@@ -381,8 +385,8 @@ implements Visitor
 		return null;
 	}	
 
-        @Override
-        public Object visitCallTab(CallTab aThis, Object arg) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
+	@Override
+	public Object visitCallTab(CallTab aThis, Object arg) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
 }

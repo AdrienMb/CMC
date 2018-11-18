@@ -15,7 +15,7 @@ import javax.swing.*;
 
 public class Compiler
 {
-	private static final String EXAMPLES_DIR = "C:\\Users\\adrie\\Documents\\VIA\\CMC\\simpleIf.txt";
+	private static final String EXAMPLES_DIR = "EZprogram/";
 	
 	
 	public static void main( String args[] )
