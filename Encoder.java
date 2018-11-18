@@ -377,7 +377,12 @@ implements Visitor
 
 	@Override
 	public Object visitTabList(TabList s, Object arg) {
-		// TODO Auto-generated method stub
+		s.args.visit(this,arg);
 		return null;
 	}	
+
+        @Override
+        public Object visitCallTab(CallTab aThis, Object arg) {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
 }

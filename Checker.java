@@ -230,11 +230,28 @@ public class Checker
 		return o.spelling;
 	}
 
-
-	@Override
 	public Object visitTabList(TabList s, Object arg) {
-		// TODO Auto-generated method stub
+		s.args.visit(this,arg);
 		return null;
 	}
+
+        public Object visitCallTab(CallTab c, Object arg) {
+            String id = (String) c.name.visit( this, null );
+            
+            Type t = (Type) c.arg.visit( this, null ) ;
+		
+		Declaration d = idTable.retrieve( id );
+		if( d == null )
+			System.out.println( id + " is not declared" );
+		else if( !( d instanceof FunctionDeclaration ) )
+			System.out.println( id + " is not tab" );
+		else {
+			VariableDeclaration f = (VariableDeclaration) d;
+			c.decl = f;
+		}
+		
+		return new Type( true );
+            
+        }
 
 }

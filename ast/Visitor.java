@@ -48,4 +48,6 @@ public interface Visitor
 	public Object visitIntegerLiteral( IntegerLiteral i, Object arg );
 	
 	public Object visitOperator( Operator o, Object arg );
+
+    public Object visitCallTab(CallTab aThis, Object arg);
 }

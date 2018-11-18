@@ -89,12 +89,13 @@ public class Token
 	public static final byte LEFTPARAN = 20;
 	public static final byte RIGHTPARAN = 21;
 	public static final byte QUESTION = 22;
+        public static final byte EXCLAMATION = 23;
 
-	public static final byte DISPLAY = 23;
+	public static final byte DISPLAY = 24;
 
-	public static final byte EOT = 24;
+	public static final byte EOT = 25;
 
-	public static final byte ERROR = 25;
+	public static final byte ERROR = 26;
 
 
 	private static final String SPELLINGS[] =
@@ -125,6 +126,7 @@ public class Token
 				"(",
 				")",
 				"?",
+                                "!",
 				"display",
 				"<eot>",
 				"<error>",

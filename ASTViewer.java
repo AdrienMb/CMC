@@ -118,6 +118,10 @@ extends JFrame
 			node.setUserObject( "CallExpression" );
 			node.add( createTree( ((CallExpression)ast).name ) );
 			node.add( createTree( ((CallExpression)ast).args ) );
+                } else if( ast instanceof CallTab ) {
+			node.setUserObject( "CallTab" );
+			node.add( createTree( ((CallTab)ast).name ) );
+			node.add( createTree( ((CallTab)ast).arg ) );        
 		} else if( ast instanceof TabList ) {
 			node.setUserObject( "TabList" );
 			node.add( createTree( ((TabList)ast).args ) );        

@@ -117,6 +117,9 @@ public class Scanner
 		case '#':
 			takeIt();
 			return Token.OPERATOR;
+                case '!':
+                        takeIt();
+                        return Token.EXCLAMATION;
 
 		case SourceFile.EOT:
 			return Token.EOT;

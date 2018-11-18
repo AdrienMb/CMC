@@ -9,9 +9,7 @@
  * 01.10.2006 AST introduced
  * 28.09.2006 Original version (based on Watt&Brown)
  */
-
 package dk.via.jpe.intlang;
-
 
 import dk.via.jpe.intlang.ast.FunctionDeclaration;
 import dk.via.jpe.intlang.ast.UnaryExpression;
@@ -38,140 +36,119 @@ import dk.via.jpe.intlang.ast.IfStatement;
 import dk.via.jpe.intlang.ast.ExpressionStatement;
 import dk.via.jpe.intlang.ast.*;
 
+public class ParserOperatorPrecedence {
 
-public class ParserOperatorPrecedence
-{
-	private Scanner scan;
+    private Scanner scan;
 
+    private Token currentTerminal;
 
-	private Token currentTerminal;
+    public ParserOperatorPrecedence(Scanner scan) {
+        this.scan = scan;
 
+        currentTerminal = scan.scan();
+    }
 
-	public ParserOperatorPrecedence( Scanner scan )
-	{
-		this.scan = scan;
+    public AST parseProgram() {
+        Block block = parseBlock();
 
-		currentTerminal = scan.scan();
-	}
+        if (currentTerminal.kind != Token.EOT) {
+            System.out.println("Tokens found after end of program");
+        }
 
+        return new Program(block);
+    }
 
-	public AST parseProgram()
-	{
-		Block block = parseBlock();
+    private Block parseBlock() {
+        accept(Token.QUOTE);
+        accept(Token.VARIABLES);
+        accept(Token.COLONS);
+        Declarations decs = parseDeclarations();
 
-		if( currentTerminal.kind != Token.EOT )
-			System.out.println( "Tokens found after end of program");
+        Declarations funcs = null;
+        if (currentTerminal.kind == Token.FUNCTIONS) {
+            accept(Token.FUNCTIONS);
+            accept(Token.COLONS);
+            funcs = parseFunctions();
+        }
+        accept(Token.EXECUTE);
+        accept(Token.COLONS);
+        Statements stats = parseStatements();
+        accept(Token.QUOTE);
 
-		return new Program( block );
-	}
+        return new Block(decs, stats, funcs);
+    }
 
+    private Declarations parseDeclarations() {
+        Declarations decs = new Declarations();
+        removeNewLine();
+        while (currentTerminal.kind == Token.NEW) {
+            decs.dec.add(parseOneDeclaration());
+        }
 
-	private Block parseBlock()
-	{
-		accept( Token.QUOTE );
-		accept( Token.VARIABLES );
-		accept( Token.COLONS );
-		Declarations decs = parseDeclarations();
+        return decs;
+    }
 
-		Declarations funcs=null;
-		if(currentTerminal.kind == Token.FUNCTIONS  ) {
-			accept( Token.FUNCTIONS );
-			accept( Token.COLONS );
-			funcs = parseFunctions();
-		}
-		accept( Token.EXECUTE );
-		accept( Token.COLONS );
-		Statements stats = parseStatements();
-		accept( Token.QUOTE );
+    private Declaration parseOneDeclaration() {
+        if (currentTerminal.kind == Token.NEW) {
+            accept(Token.NEW);
+            if (currentTerminal.kind == Token.INT) {
+                accept(Token.INT);
+                Identifier id = parseIdentifier();
+                accept(Token.NEWLINE);
 
-		return new Block( decs, stats, funcs );
-	}
+                return new VariableDeclaration(id);
+            } else if (currentTerminal.kind == Token.BOOLEAN) {
+                accept(Token.BOOLEAN);
+                Identifier id = parseIdentifier();
+                accept(Token.NEWLINE);
 
+                return new VariableDeclaration(id);
+            } else if (currentTerminal.kind == Token.TAB) {
+                accept(Token.TAB);
+                Identifier id = parseIdentifier();
+                accept(Token.NEWLINE);
 
-	private Declarations parseDeclarations()
-	{
-		Declarations decs = new Declarations();
-		removeNewLine();
-		while( currentTerminal.kind == Token.NEW  )
-			decs.dec.add( parseOneDeclaration() );
+                return new VariableDeclaration(id);
+            } else {
+                System.out.println("int, boolean or tab expected");
+                return null;
+            }
+        } else {
+            System.out.println("new expected");
+            return null;
+        }
+    }
 
-		return decs;
-	}
+    private Declarations parseFunctions() {
+        Declarations funcs = new Declarations();
 
+        removeNewLine();
+        while (currentTerminal.kind == Token.NEW) {
+            funcs.dec.add(parseOneFunction());
+        }
 
-	private Declaration parseOneDeclaration()
-	{
-		if( currentTerminal.kind==Token.NEW ) {
-			accept( Token.NEW );
-			if(currentTerminal.kind==Token.INT) {
-				accept( Token.INT );
-				Identifier id = parseIdentifier();
-				accept( Token.NEWLINE );
+        return funcs;
+    }
 
-				return new VariableDeclaration( id );
-			}
-			else if(currentTerminal.kind==Token.BOOLEAN) {
-				accept( Token.BOOLEAN );
-				Identifier id = parseIdentifier();
-				accept( Token.NEWLINE );
+    private FunctionDeclaration parseOneFunction() {
+        if (currentTerminal.kind == Token.NEW) {
+            accept(Token.NEW);
+            Identifier name = parseIdentifier();
+            accept(Token.COLONS);
+            Block block = parseBlock();
+            accept(Token.NEWLINE);
+            accept(Token.RESULT);
+            Expression retExp = parseExpression();
+            accept(Token.NEWLINE);
 
-				return new VariableDeclaration( id );
-			}
-			else if(currentTerminal.kind==Token.TAB) {
-				accept( Token.TAB );
-				Identifier id = parseIdentifier();
-				accept( Token.NEWLINE );
+            return new FunctionDeclaration(name, block.decs, block, retExp);
+        } else {
+            System.out.println("var or func expected");
+            return null;
+        }
+    }
 
-				return new VariableDeclaration( id );
-			}
-			else {
-				System.out.println( "int, boolean or tab expected" );
-				return null;
-			}
-		}
-		else {
-			System.out.println( "new expected" );
-			return null;
-		}
-	}
-
-	private Declarations parseFunctions()
-	{
-		Declarations funcs = new Declarations();
-
-		removeNewLine();
-		while( currentTerminal.kind == Token.NEW )
-			funcs.dec.add( parseOneFunction() );
-
-		return funcs;
-	}
-
-
-	private FunctionDeclaration parseOneFunction()
-	{
-		if( currentTerminal.kind==Token.NEW ) {
-			accept( Token.NEW );
-			Identifier name = parseIdentifier();
-			accept( Token.COLONS );
-			Block block = parseBlock();
-			accept( Token.NEWLINE );
-			accept( Token.RESULT );
-			Expression retExp = parseExpression();
-			accept( Token.NEWLINE );
-
-			return new FunctionDeclaration(name, block.decs, block, retExp);
-		}
-
-		else {
-			System.out.println( "var or func expected" );
-			return null;
-		}
-	}
-
-
-
-
-	/*private void parseIdList()
+    /*private void parseIdList()
 	{
 		accept( Token.IDENTIFIER );
 
@@ -180,276 +157,264 @@ public class ParserOperatorPrecedence
 			accept( Token.IDENTIFIER );
 		}
 	} */
+    private Statements parseStatements() {
 
+        Statements stats = new Statements();
 
-	private Statements parseStatements()
-	{
+        removeNewLine();
+        while (currentTerminal.kind == Token.IDENTIFIER
+                || currentTerminal.kind == Token.OPERATOR
+                || currentTerminal.kind == Token.INTEGERLITERAL
+                || currentTerminal.kind == Token.LEFTPARAN
+                || currentTerminal.kind == Token.IF
+                || currentTerminal.kind == Token.WHILE
+                || currentTerminal.kind == Token.DISPLAY) {
+            stats.stat.add(parseOneStatement());
+        }
 
-		Statements stats = new Statements();
+        return stats;
+    }
 
-		removeNewLine();
-		while( currentTerminal.kind == Token.IDENTIFIER ||
-				currentTerminal.kind == Token.OPERATOR ||
-				currentTerminal.kind == Token.INTEGERLITERAL ||
-				currentTerminal.kind == Token.LEFTPARAN ||
-				currentTerminal.kind == Token.IF ||
-				currentTerminal.kind == Token.WHILE ||
-				currentTerminal.kind==Token.DISPLAY)
-			stats.stat.add( parseOneStatement() );
+    private Statement parseOneStatement() {
+        switch (currentTerminal.kind) {
+            case Token.IDENTIFIER:
+            case Token.INTEGERLITERAL:
+            case Token.OPERATOR:
+            case Token.LEFTPARAN:
+                Expression exp = parseExpression();
+                accept(Token.NEWLINE);
+                return new ExpressionStatement(exp);
 
-		return stats;
-	}
+            case Token.IF:
+                accept(Token.IF);
+                Expression ifExp = parseExpression();
+                accept(Token.DO);
+                accept(Token.COLONS);
+                accept(Token.QUOTE);
+                Statements thenPart = parseStatements();
+                accept(Token.QUOTE);
+                removeNewLine();
+                Statements elsePart = null;
+                if (currentTerminal.kind == Token.ELSE) {
+                    accept(Token.ELSE);
+                    accept(Token.COLONS);
+                    accept(Token.QUOTE);
+                    elsePart = parseStatements();
+                    accept(Token.QUOTE);
+                }
+                removeNewLine();
+                return new IfStatement(ifExp, thenPart, elsePart);
 
+            case Token.WHILE:
+                accept(Token.WHILE);
+                Expression whileExp = parseExpression();
+                accept(Token.DO);
+                accept(Token.COLONS);
+                accept(Token.QUOTE);
+                Statements stats = parseStatements();
+                accept(Token.QUOTE);
+                accept(Token.NEWLINE);
 
-	private Statement parseOneStatement()
-	{
-		switch( currentTerminal.kind ) {
-		case Token.IDENTIFIER:
-		case Token.INTEGERLITERAL:
-		case Token.OPERATOR:
-		case Token.LEFTPARAN:
-			Expression exp = parseExpression();
-			accept(Token.NEWLINE);
-			return new ExpressionStatement( exp );
+                return new WhileStatement(whileExp, stats);
 
-		case Token.IF:
-			accept( Token.IF );
-			Expression ifExp = parseExpression();
-			accept( Token.DO );
-			accept( Token.COLONS);
-			accept( Token.QUOTE );
-			Statements thenPart = parseStatements();
-			accept( Token.QUOTE );
-			removeNewLine();
-			Statements elsePart = null;
-			if( currentTerminal.kind == Token.ELSE ) {
-				accept( Token.ELSE );
-				accept( Token.COLONS );
-				accept( Token.QUOTE );
-				elsePart = parseStatements();
-				accept( Token.QUOTE );
-			}
-			removeNewLine();
-			return new IfStatement( ifExp, thenPart, elsePart );
+            case Token.DISPLAY:
+                accept(Token.DISPLAY);
+                Expression displayExp = parseExpression();
+                accept(Token.NEWLINE);
 
-		case Token.WHILE:
-			accept( Token.WHILE );
-			Expression whileExp = parseExpression();
-			accept( Token.DO );
-			accept( Token.COLONS );
-			accept( Token.QUOTE );
-			Statements stats = parseStatements();
-			accept( Token.QUOTE );
-			accept(Token.NEWLINE);
+                return new DisplayStatement(displayExp);
 
-			return new WhileStatement( whileExp, stats );
+            default:
+                System.out.println("Error in statement");
+                return null;
+        }
+    }
 
-		case Token.DISPLAY:
-			accept( Token.DISPLAY);
-			Expression displayExp = parseExpression();
-			accept( Token.NEWLINE );
+    private Expression parseExpression() {
+        Expression res = parseExpression1();
+        if (currentTerminal.isAssignOperator() || currentTerminal.kind == Token.QUESTION) {
+            if (currentTerminal.kind == Token.QUESTION) {
+                accept(Token.QUESTION);
+            } else {
+                Operator op = parseOperator();
+                Expression tmp = parseExpression();
+                res = new BinaryExpression(op, res, tmp);
+            }
+        }
+        return res;
+    }
 
-			return new DisplayStatement( displayExp );
+    private Expression parseExpression1() {
+        Expression res = parsePrimary();
+        while (currentTerminal.isAddOperator() || currentTerminal.isCompareOperator() || currentTerminal.kind == Token.QUESTION) {
+            if (currentTerminal.kind == Token.QUESTION) {
+                accept(Token.QUESTION);
+            } else {
+                System.out.println("add or compare");
+                Operator op = parseOperator();
+                Expression tmp = parseExpression2();
+                res = new BinaryExpression(op, res, tmp);
+            }
+        }
+        return res;
+    }
 
-		default:
-			System.out.println( "Error in statement" );
-			return null;
-		}
-	}
+    private Expression parseExpression2() {
+        Expression res = parsePrimary();
+        while (currentTerminal.isMulOperator() || currentTerminal.kind == Token.QUESTION) {
+            if (currentTerminal.kind == Token.QUESTION) {
+                accept(Token.QUESTION);
+            } else {
+                Operator op = parseOperator();
+                Expression tmp = parsePrimary();
+                res = new BinaryExpression(op, res, tmp);
+            }
+        }
+        return res;
+    }
 
+    private Expression parsePrimary() {
+        switch (currentTerminal.kind) {
+            case Token.IDENTIFIER:
+                Identifier name = parseIdentifier();
 
-	private Expression parseExpression()
-	{
-		Expression res = parseExpression1();
-		if( currentTerminal.isAssignOperator() || currentTerminal.kind==Token.QUESTION) {
-			if(currentTerminal.kind==Token.QUESTION) {
-				accept(Token.QUESTION);}
-			else {                              
-				Operator op = parseOperator();
-				Expression tmp = parseExpression();
-				res = new BinaryExpression( op, res, tmp );
-			}
-		}
-		return res;
-	}
-        
-        private Expression parseExpression1()
-	{
-		Expression res = parsePrimary();
-		while( currentTerminal.isAddOperator() ||  currentTerminal.isCompareOperator() || currentTerminal.kind==Token.QUESTION) {
-			if(currentTerminal.kind==Token.QUESTION) {
-				accept(Token.QUESTION);}
-			else { 
-                                System.out.println("add or compare");
-				Operator op = parseOperator();
-				Expression tmp = parseExpression2();
-				res = new BinaryExpression( op, res, tmp );
-			}
-		}
-		return res;
-	}
-        
-        private Expression parseExpression2()
-	{
-		Expression res = parsePrimary();
-		while( currentTerminal.isMulOperator() || currentTerminal.kind==Token.QUESTION) {
-			if(currentTerminal.kind==Token.QUESTION) {
-				accept(Token.QUESTION);}
-			else {                              
-				Operator op = parseOperator();
-				Expression tmp = parsePrimary();
-				res = new BinaryExpression( op, res, tmp );
-			}
-		}
-		return res;
-	}
-        
-        
+                if (currentTerminal.kind == Token.LEFTPARAN) {
+                    if (currentTerminal.kind == Token.EXCLAMATION) {
+                        accept(Token.EXCLAMATION);
+                        Expression arg = null;
 
+                        if (currentTerminal.kind == Token.INTEGERLITERAL) {
+                            arg = parseExpression();
+                        }
 
-	private Expression parsePrimary()
-	{
-		switch( currentTerminal.kind ) {
-		case Token.IDENTIFIER:
-			Identifier name = parseIdentifier();
+                        accept(Token.RIGHTPARAN);
+                        return new CallTab(name, arg);
+                    } else {
+                        ExpList args;
 
-			if( currentTerminal.kind == Token.LEFTPARAN ) {
-				accept( Token.LEFTPARAN );
+                        if (currentTerminal.kind == Token.IDENTIFIER
+                                || currentTerminal.kind == Token.INTEGERLITERAL
+                                || currentTerminal.kind == Token.OPERATOR
+                                || currentTerminal.kind == Token.LEFTPARAN) {
+                            args = parseExpressionList();
+                        } else {
+                            args = new ExpList();
+                        }
 
-				ExpList args;
+                        accept(Token.RIGHTPARAN);
+                        return new CallExpression(name, args);
+                    }
+                } else {
+                    return new VarExpression(name);
+                }
 
-				if( currentTerminal.kind == Token.IDENTIFIER ||
-						currentTerminal.kind == Token.INTEGERLITERAL ||
-						currentTerminal.kind == Token.OPERATOR ||
-						currentTerminal.kind == Token.LEFTPARAN )
-					args = parseExpressionList();
-				else
-					args = new ExpList();
+            case Token.INTEGERLITERAL:
+                IntegerLiteral lit = parseIntegerLiteral();
 
+                return new IntLitExpression(lit);
 
+            case Token.OPERATOR:
+                Operator op = parseOperator();
+                Expression exp = parsePrimary();
+                return new UnaryExpression(op, exp);
 
-				accept( Token.RIGHTPARAN );
-				return new CallExpression( name, args );
-			}
-			else
-				return new VarExpression( name );
+            case Token.LEFTPARAN:
+                accept(Token.LEFTPARAN);
+                ExpList args;
 
-		case Token.INTEGERLITERAL:
-			IntegerLiteral lit = parseIntegerLiteral();
+                if (currentTerminal.kind == Token.IDENTIFIER
+                        || currentTerminal.kind == Token.INTEGERLITERAL
+                        || currentTerminal.kind == Token.OPERATOR
+                        || currentTerminal.kind == Token.LEFTPARAN) {
+                    args = parseExpressionList();
+                } else {
+                    args = new ExpList();
+                }
 
-			return new IntLitExpression( lit );
+                accept(Token.RIGHTPARAN);
 
-		case Token.OPERATOR:
-			Operator op = parseOperator();
-			Expression exp = parsePrimary();
-			return new UnaryExpression( op, exp );
+                return new TabList(args);
 
-		case Token.LEFTPARAN:
-			accept( Token.LEFTPARAN);
-			ExpList args;
-
-			if( currentTerminal.kind == Token.IDENTIFIER ||
-					currentTerminal.kind == Token.INTEGERLITERAL ||
-					currentTerminal.kind == Token.OPERATOR ||
-					currentTerminal.kind == Token.LEFTPARAN )
-				args = parseExpressionList();
-			else
-				args = new ExpList();
-
-
-			accept( Token.RIGHTPARAN );
-
-			return new TabList( args );
-
-			/*case Token.QUESTION:
+            /*case Token.QUESTION:
 			accept(Token.QUESTION);
 			if (currentTerminal.kind==Token.QUOTE)
 				accept( Token.QUOTE );
 			accept( Token.NEWLINE );
 			break;*/
+            default:
+                System.out.println("Error in primary");
+                return null;
+        }
+    }
 
-			default:
-				System.out.println( "Error in primary" );
-				return null;
-		}
-	}
+    private ExpList parseExpressionList() {
+        ExpList exps = new ExpList();
 
+        removeNewLine();
+        exps.exp.add(parseExpression());
+        while (currentTerminal.kind == Token.COMMA) {
+            accept(Token.COMMA);
+            exps.exp.add(parseExpression());
+        }
 
-	private ExpList parseExpressionList()
-	{
-		ExpList exps = new ExpList();
+        return exps;
+    }
 
-		removeNewLine();
-		exps.exp.add( parseExpression() );
-		while( currentTerminal.kind == Token.COMMA ) {
-			accept( Token.COMMA );
-			exps.exp.add( parseExpression() );
-		}
+    private Identifier parseIdentifier() {
+        if (currentTerminal.kind == Token.IDENTIFIER) {
+            Identifier res = new Identifier(currentTerminal.spelling);
+            currentTerminal = scan.scan();
 
-		return exps;
-	}
+            return res;
+        } else {
+            System.out.println("Identifier expected");
 
-	private Identifier parseIdentifier()
-	{
-		if( currentTerminal.kind == Token.IDENTIFIER ) {
-			Identifier res = new Identifier( currentTerminal.spelling );
-			currentTerminal = scan.scan();
+            return new Identifier("???");
+        }
+    }
 
-			return res;
-		} else {
-			System.out.println( "Identifier expected" );
+    private IntegerLiteral parseIntegerLiteral() {
+        if (currentTerminal.kind == Token.INTEGERLITERAL) {
+            IntegerLiteral res = new IntegerLiteral(currentTerminal.spelling);
+            currentTerminal = scan.scan();
 
-			return new Identifier( "???" );
-		}
-	}
+            return res;
+        } else {
+            System.out.println("Integer literal expected");
 
-	private IntegerLiteral parseIntegerLiteral()
-	{
-		if( currentTerminal.kind == Token.INTEGERLITERAL ) {
-			IntegerLiteral res = new IntegerLiteral( currentTerminal.spelling );
-			currentTerminal = scan.scan();
+            return new IntegerLiteral("???");
+        }
+    }
 
-			return res;
-		} else {
-			System.out.println( "Integer literal expected" );
+    private Operator parseOperator() {
+        if (currentTerminal.kind == Token.OPERATOR) {
+            Operator res = new Operator(currentTerminal.spelling);
+            System.out.println("op : " + res.spelling);
+            currentTerminal = scan.scan();
 
-			return new IntegerLiteral( "???" );
-		}
-	}
+            return res;
+        } else {
+            System.out.println("Operator expected");
 
+            return new Operator("???");
+        }
+    }
 
-	private Operator parseOperator()
-	{
-		if( currentTerminal.kind == Token.OPERATOR ) {
-			Operator res = new Operator( currentTerminal.spelling );
-                        System.out.println("op : "+res.spelling);
-                        currentTerminal = scan.scan();
+    private void accept(byte expected) {
+        System.out.println(currentTerminal.spelling);
+        while (currentTerminal.kind == Token.NEWLINE && currentTerminal.kind != expected) {
+            currentTerminal = scan.scan();
+        }
+        if (currentTerminal.kind == expected) {
+            currentTerminal = scan.scan();
+        } else {
+            System.out.println("Expected token of kind " + expected + " instead of " + currentTerminal.kind);
+        }
+    }
 
-			return res;
-		} else {
-			System.out.println( "Operator expected" );
-
-			return new Operator( "???" );
-		}
-	}
-
-
-	private void accept( byte expected )
-	{
-		System.out.println(currentTerminal.spelling);
-		while (currentTerminal.kind == Token.NEWLINE && currentTerminal.kind != expected) {
-			currentTerminal = scan.scan();
-		}
-		if( currentTerminal.kind == expected ) 
-			currentTerminal = scan.scan();
-
-		else
-			System.out.println( "Expected token of kind " + expected + " instead of "+currentTerminal.kind);
-	}
-
-
-	private void removeNewLine() {
-		while (currentTerminal.kind == Token.NEWLINE) 
-			currentTerminal = scan.scan();
-	}
+    private void removeNewLine() {
+        while (currentTerminal.kind == Token.NEWLINE) {
+            currentTerminal = scan.scan();
+        }
+    }
 }
