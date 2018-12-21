@@ -106,9 +106,13 @@ implements Visitor
 		if( size > 0)
 			//
 			emit( Machine.PUSHop, 0, 0, size );
+		int i=-size;
 		if(b.funcs == null) {
-			emit( Machine.LOADop, currentLevel, Machine.LBr, -1);
-			emit( Machine.STOREop, currentLevel, Machine.LBr, adr.displacement-1);
+			while(i<0) {
+				emit( Machine.LOADop, currentLevel, Machine.LBr, i);
+				emit( Machine.STOREop, currentLevel, Machine.LBr, adr.displacement+i);
+				i++;
+			}
 		}
 
 		b.stats.visit( this, null );
@@ -268,17 +272,15 @@ implements Visitor
 				else if( op.equals( "%" ) )
 					emit( Machine.CALLop, 0, Machine.PBr, Machine.modDisplacement );
 				else if( op.equals( "=" ) ) {
-					emit( Machine.PUSHop, 0, Machine.PBr, Machine.eqDisplacement );
-					emit( Machine.CALLop, 0, Machine.PBr, Machine.eqDisplacement );
+					emit( Machine.CALLop, 0, Machine.PBr, Machine.eqDisplacement-1 );
 				}
 				else if( op.equals( "#" ) ){
-					emit( Machine.PUSHop, 0, Machine.PBr, Machine.neDisplacement );
-					emit( Machine.CALLop, 0, Machine.PBr, Machine.neDisplacement );
+					emit( Machine.CALLop, 0, Machine.PBr, Machine.neDisplacement-1 );
 				}
 				else if( op.equals( ">" ) )
 					emit( Machine.CALLop, 0, Machine.PBr, Machine.gtDisplacement );
 				else if( op.equals( "<" ) )
-					emit( Machine.CALLop, 0, Machine.PBr, Machine.leDisplacement );
+					emit( Machine.CALLop, 0, Machine.PBr, Machine.ltDisplacement );
 			}        
 		}
 
@@ -309,15 +311,13 @@ implements Visitor
 		Address adr = c.decl.address;
 
 		int register = displayRegister( currentLevel, adr.level );
-		int i=0;
+		int i = 0;
 		for(Expression arg0 : c.args.exp) {
-			for(Declaration var0 : c.decl.params.dec) {
-				IntLitExpression argVar = (IntLitExpression) arg0;
-				emit( Machine.LOADAop, 0, Machine.CB, Integer.parseInt(argVar.literal.spelling));
-				emit( Machine.STOREop, 0, Machine.CB, i);
-				i++;
-
-			}
+			IntLitExpression argVar = (IntLitExpression) arg0;
+			emit( Machine.LOADAop, 0, Machine.CB, Integer.parseInt(argVar.literal.spelling));
+			emit( Machine.STOREop, 0, Machine.CB, i);
+			i++;
+			
 		}
 
 		emit( Machine.CALLop, register, Machine.CB, adr.displacement );
@@ -384,12 +384,25 @@ implements Visitor
 
 	@Override
 	public Object visitTabList(TabList s, Object arg) {
-		s.args.visit(this,arg);
+		//s.args.visit(this,arg);
+		//emit( Machine.STOREop, 0, Machine.CB, 0);
+
+		for(Expression arg0 : s.args.exp) {
+			IntLitExpression argVar = (IntLitExpression) arg0;
+			emit( Machine.LOADAop, currentLevel, Machine.CB, Integer.parseInt(argVar.literal.spelling));
+			emit( Machine.STOREop, currentLevel, Machine.CB, 0);
+		}
+		
 		return null;
 	}	
 
 	@Override
 	public Object visitCallTab(CallTab aThis, Object arg) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//		aThis.exp.visit( this, new Boolean( true ) );
+//
+		emit( Machine.LOADop, 0, Machine.LBr, -1);
+		emit( Machine.STOREop, currentLevel, Machine.LBr, 0);
+		return null;
+		//throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 }
