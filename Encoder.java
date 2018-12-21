@@ -96,15 +96,20 @@ implements Visitor
 		Address adr = (Address) b.decs.visit( this, arg );
 
 		int size = (((Integer) adr.displacement).intValue()) - startDisplacement;
-		emit( Machine.JUMPop, 0, Machine.CB, 0 );
+
 		if(b.funcs != null) {
 			b.funcs.visit(this, adr);
 		}
+
 		patch( before, nextAdr );
 
 		if( size > 0)
 			//
 			emit( Machine.PUSHop, 0, 0, size );
+		if(b.funcs == null) {
+			emit( Machine.LOADop, currentLevel, Machine.LBr, -1);
+			emit( Machine.STOREop, currentLevel, Machine.LBr, adr.displacement-1);
+		}
 
 		b.stats.visit( this, null );
 
@@ -263,11 +268,11 @@ implements Visitor
 				else if( op.equals( "%" ) )
 					emit( Machine.CALLop, 0, Machine.PBr, Machine.modDisplacement );
 				else if( op.equals( "=" ) ) {
-					emit( Machine.PUSHop, 0, Machine.PBr, Machine.newDisplacement );
+					emit( Machine.PUSHop, 0, Machine.PBr, Machine.eqDisplacement );
 					emit( Machine.CALLop, 0, Machine.PBr, Machine.eqDisplacement );
 				}
 				else if( op.equals( "#" ) ){
-					emit( Machine.PUSHop, 0, Machine.PBr, Machine.newDisplacement );
+					emit( Machine.PUSHop, 0, Machine.PBr, Machine.neDisplacement );
 					emit( Machine.CALLop, 0, Machine.PBr, Machine.neDisplacement );
 				}
 				else if( op.equals( ">" ) )
@@ -304,16 +309,14 @@ implements Visitor
 		Address adr = c.decl.address;
 
 		int register = displayRegister( currentLevel, adr.level );
-
+		int i=0;
 		for(Expression arg0 : c.args.exp) {
 			for(Declaration var0 : c.decl.params.dec) {
 				IntLitExpression argVar = (IntLitExpression) arg0;
-				VariableDeclaration vard = (VariableDeclaration) var0;
-				//emit( Machine.PUSHop, 0, currentLevel, 1 );
-				int register2 = displayRegister(vard.adr.level,  vard.adr.level);
-				emit( Machine.LOADLop, 1, register, Integer.parseInt(argVar.literal.spelling));
+				emit( Machine.LOADAop, 0, Machine.CB, Integer.parseInt(argVar.literal.spelling));
+				emit( Machine.STOREop, 0, Machine.CB, i);
+				i++;
 
-				emit( Machine.STOREop, 1, register2, vard.adr.displacement);
 			}
 		}
 
